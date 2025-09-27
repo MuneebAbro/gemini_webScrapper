@@ -32,7 +32,7 @@ A powerful web scraper that extracts data from websites and creates structured k
 ### Basic Usage
 
 ```bash
-python main.py https://example.com
+python run_gui.py
 ```
 
 ### Advanced Usage
