@@ -20,7 +20,7 @@ from datetime import datetime
 
 # Import the existing scraper modules
 from web_scraper import WebScraper
-from gemini_processor import GeminiProcessor
+from llama_processor import LlamaProcessor
 from knowledge_base_formatter import KnowledgeBaseFormatter
 from convert_to_sql import ChatbotToSQLConverter
 from simple_sql_converter import SimpleSQLConverter
@@ -382,13 +382,13 @@ class ScraperGUI:
         checkbox_frame = tk.Frame(config_content, bg='#ffffff')
         checkbox_frame.grid(row=2, column=0, columnspan=4, sticky=(tk.W, tk.E), pady=10)
         
-        self.use_gemini_var = tk.BooleanVar(value=bool(Config.GEMINI_API_KEY))
-        gemini_check = tk.Checkbutton(checkbox_frame, text="🤖 Use Gemini AI Processing", 
-                                     variable=self.use_gemini_var,
+        self.use_llama_var = tk.BooleanVar(value=bool(Config.LLAMA_API_KEY))
+        llama_check = tk.Checkbutton(checkbox_frame, text="🤖 Use Llama AI Processing", 
+                                     variable=self.use_llama_var,
                                      font=('Segoe UI', 10),
                                      fg='#2c3e50', bg='#ffffff',
                                      selectcolor='#ecf0f1')
-        gemini_check.pack(side=tk.LEFT, padx=(0, 20))
+        llama_check.pack(side=tk.LEFT, padx=(0, 20))
         
         self.auto_convert_var = tk.BooleanVar(value=False)
         auto_convert_check = tk.Checkbutton(checkbox_frame, text="🔄 Auto-convert to SQL after scraping", 
@@ -725,7 +725,7 @@ class ScraperGUI:
                                      selectcolor='#ecf0f1')
         simple_radio.pack(side=tk.LEFT, padx=(0, 15))
         
-        ai_radio = tk.Radiobutton(converter_frame, text="AI (Gemini-powered)", 
+        ai_radio = tk.Radiobutton(converter_frame, text="AI (Llama-powered)", 
                                  variable=self.converter_type_var, value="ai",
                                  font=('Segoe UI', 10),
                                  fg='#2c3e50', bg='#ffffff',
@@ -961,10 +961,10 @@ class ScraperGUI:
             messagebox.showerror("Error", "Min content length must be a positive integer")
             return False
             
-        # Check Gemini API key if using Gemini
-        if self.use_gemini_var.get() and not Config.GEMINI_API_KEY:
-            messagebox.showerror("Error", "GEMINI_API_KEY not found in environment variables.\n"
-                                         "Please set your Gemini API key or uncheck 'Use Gemini AI Processing'")
+        # Check Llama API key if using Llama
+        if self.use_llama_var.get() and not Config.LLAMA_API_KEY:
+            messagebox.showerror("Error", "LLAMA_API_KEY not found in environment variables.\n"
+                                         "Please set your Llama API key or uncheck 'Use Llama AI Processing'")
             return False
             
         # Check business ID if auto-convert is enabled
@@ -974,10 +974,10 @@ class ScraperGUI:
                 messagebox.showerror("Error", "Business ID is required when auto-convert to SQL is enabled")
                 return False
             
-            # Check Gemini API key if AI converter is selected for auto-conversion
-            if self.sql_converter_type_var.get() == "ai" and not Config.GEMINI_API_KEY:
-                messagebox.showerror("Error", "GEMINI_API_KEY not found for AI SQL converter.\n"
-                                             "Please set your Gemini API key or select 'Simple' converter")
+            # Check Llama API key if AI converter is selected for auto-conversion
+            if self.sql_converter_type_var.get() == "ai" and not Config.LLAMA_API_KEY:
+                messagebox.showerror("Error", "LLAMA_API_KEY not found for AI SQL converter.\n"
+                                             "Please set your Llama API key or select 'Simple' converter")
                 return False
             
         return True
@@ -1006,10 +1006,10 @@ class ScraperGUI:
             messagebox.showerror("Error", "Please specify an output SQL file")
             return False
             
-        # Check Gemini API key if using AI converter
-        if self.converter_type_var.get() == "ai" and not Config.GEMINI_API_KEY:
-            messagebox.showerror("Error", "GEMINI_API_KEY not found in environment variables.\n"
-                                         "Please set your Gemini API key or use 'Simple Converter'")
+        # Check Llama API key if using AI converter
+        if self.converter_type_var.get() == "ai" and not Config.LLAMA_API_KEY:
+            messagebox.showerror("Error", "LLAMA_API_KEY not found in environment variables.\n"
+                                         "Please set your Llama API key or use 'Simple Converter'")
             return False
             
         return True
@@ -1065,7 +1065,7 @@ class ScraperGUI:
             self.logger.info(f"Delay between requests: {Config.DELAY_BETWEEN_REQUESTS}s")
             self.logger.info(f"Output directory: {Config.OUTPUT_DIR}")
             self.logger.info(f"Output file: {Config.JSON_FILENAME}")
-            self.logger.info(f"Gemini processing: {'Enabled' if self.use_gemini_var.get() else 'Disabled'}")
+            self.logger.info(f"Llama processing: {'Enabled' if self.use_llama_var.get() else 'Disabled'}")
             self.logger.info("=" * 60)
             
             # Step 1: Scrape the website
@@ -1161,14 +1161,14 @@ class ScraperGUI:
             
             self.logger.info(f"Successfully scraped {len(scraped_data)} pages")
             
-            # Step 2: Process with Gemini (if enabled)
-            if self.use_gemini_var.get() and self.is_scraping:
-                self.status_var.set("Step 2: Processing with Gemini AI...")
-                self.logger.info("Step 2: Processing content with Gemini AI...")
-                processor = GeminiProcessor()
+            # Step 2: Process with Llama (if enabled)
+            if self.use_llama_var.get() and self.is_scraping:
+                self.status_var.set("Step 2: Processing with Llama AI...")
+                self.logger.info("Step 2: Processing content with Llama AI...")
+                processor = LlamaProcessor()
                 processed_data = processor.batch_process_pages(scraped_data)
             elif self.is_scraping:
-                self.logger.info("Step 2: Skipping Gemini processing...")
+                self.logger.info("Step 2: Skipping Llama processing...")
                 # Convert scraped data to basic processed format
                 processed_data = []
                 for page in scraped_data:
@@ -1386,7 +1386,7 @@ class ScraperGUI:
             # Create converter
             if converter_type == "ai":
                 self.sql_status_var.set("Initializing AI converter...")
-                self.logger.info("Using AI converter with Gemini...")
+                self.logger.info("Using AI converter with Llama...")
                 converter = ChatbotToSQLConverter()
             else:
                 self.sql_status_var.set("Initializing simple converter...")

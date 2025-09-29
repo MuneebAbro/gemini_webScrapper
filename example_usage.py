@@ -6,12 +6,12 @@ Example usage of the Web Scraper Knowledge Base Generator
 import json
 import os
 from web_scraper import WebScraper
-from gemini_processor import GeminiProcessor
+from llama_processor import LlamaProcessor
 from knowledge_base_formatter import KnowledgeBaseFormatter
 
 def example_scrape_small_site():
-    """Example: Scrape a small website without Gemini processing"""
-    print("Example 1: Scraping without Gemini processing")
+    """Example: Scrape a small website without Llama processing"""
+    print("Example 1: Scraping without Llama processing")
     print("-" * 50)
     
     # Initialize scraper
@@ -23,7 +23,7 @@ def example_scrape_small_site():
     
     print(f"Scraped {len(scraped_data)} pages")
     
-    # Create basic knowledge base without Gemini
+    # Create basic knowledge base without Llama
     formatter = KnowledgeBaseFormatter()
     
     # Convert to basic processed format
@@ -55,22 +55,22 @@ def example_scrape_small_site():
     
     return knowledge_base
 
-def example_with_gemini():
-    """Example: Scrape with Gemini processing (requires API key)"""
-    print("\nExample 2: Scraping with Gemini processing")
+def example_with_llama():
+    """Example: Scrape with Llama processing (requires API key)"""
+    print("\nExample 2: Scraping with Llama processing")
     print("-" * 50)
     
     # Check if API key is available
     from config import Config
     if not Config.GEMINI_API_KEY:
-        print("GEMINI_API_KEY not found. Skipping Gemini example.")
+        print("LLAMA_API_KEY not found. Skipping Llama example.")
         print("Set your API key in .env file to use this example.")
         return None
     
     try:
         # Initialize components
         scraper = WebScraper()
-        processor = GeminiProcessor()
+        processor = LlamaProcessor()
         formatter = KnowledgeBaseFormatter()
         
         # Scrape a simple page
@@ -79,20 +79,20 @@ def example_with_gemini():
         
         print(f"Scraped {len(scraped_data)} pages")
         
-        # Process with Gemini
+        # Process with Llama
         processed_data = processor.batch_process_pages(scraped_data)
         
         # Create knowledge base
         knowledge_base = formatter.create_knowledge_base_structure(processed_data, url)
         
         # Save to file
-        output_file = formatter.save_knowledge_base(knowledge_base, "example_gemini_kb.json")
-        print(f"Knowledge base with Gemini processing saved to: {output_file}")
+        output_file = formatter.save_knowledge_base(knowledge_base, "example_llama_kb.json")
+        print(f"Knowledge base with Llama processing saved to: {output_file}")
         
         return knowledge_base
         
     except Exception as e:
-        print(f"Error with Gemini processing: {e}")
+        print(f"Error with Llama processing: {e}")
         return None
 
 def display_knowledge_base_summary(kb):
@@ -132,8 +132,8 @@ if __name__ == "__main__":
     kb1 = example_scrape_small_site()
     display_knowledge_base_summary(kb1)
     
-    # Example 2: With Gemini (if API key available)
-    kb2 = example_with_gemini()
+    # Example 2: With Llama (if API key available)
+    kb2 = example_with_llama()
     if kb2:
         display_knowledge_base_summary(kb2)
     

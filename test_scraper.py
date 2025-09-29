@@ -76,8 +76,8 @@ def test_scraper_imports():
         from web_scraper import WebScraper
         print("OK WebScraper imported successfully")
         
-        from gemini_processor import GeminiProcessor
-        print("OK GeminiProcessor imported successfully")
+        from llama_processor import LlamaProcessor
+        print("OK LlamaProcessor imported successfully")
         
         from knowledge_base_formatter import KnowledgeBaseFormatter
         print("OK KnowledgeBaseFormatter imported successfully")

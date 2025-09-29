@@ -1,11 +1,11 @@
 # Web Scraper Knowledge Base Generator
 
-A powerful web scraper that extracts data from websites and creates structured knowledge bases in JSON format, optimized for automated chatbots. Uses Google's Gemini AI for intelligent content processing.
+A powerful web scraper that extracts data from websites and creates structured knowledge bases in JSON format, optimized for automated chatbots. Uses Llama 3.3 70B AI for intelligent content processing.
 
 ## Features
 
 - **Comprehensive Web Scraping**: Extracts text, headings, links, and structured content
-- **AI-Powered Processing**: Uses Gemini AI to create FAQ questions, summaries, and structured data
+- **AI-Powered Processing**: Uses Llama 3.3 70B AI to create FAQ questions, summaries, and structured data
 - **Chatbot-Ready Output**: Generates JSON knowledge bases optimized for chatbot training
 - **Configurable**: Customizable scraping parameters and output formats
 - **Robust Error Handling**: Graceful handling of network issues and parsing errors
@@ -20,11 +20,11 @@ A powerful web scraper that extracts data from websites and creates structured k
    pip install -r requirements.txt
    ```
 
-3. **Set up your Gemini API key**:
-   - Get your API key from [Google AI Studio](https://makersuite.google.com/app/apikey)
+3. **Set up your Llama API key**:
+   - Get your API key from [Groq](https://console.groq.com/keys)
    - Create a `.env` file in the project directory:
    ```
-   GEMINI_API_KEY=your_gemini_api_key_here
+   LLAMA_API_KEY=your_llama_api_key_here
    ```
 
 ## Usage
@@ -41,8 +41,8 @@ python run_gui.py
 # Scrape with custom parameters
 python main.py https://example.com --max-pages 20 --delay 2.0 --output my_kb.json
 
-# Skip Gemini processing for faster scraping
-python main.py https://example.com --no-gemini
+# Skip Llama processing for faster scraping
+python main.py https://example.com --no-llama
 
 # Enable verbose logging
 python main.py https://example.com --verbose

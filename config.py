@@ -5,8 +5,8 @@ from dotenv import load_dotenv
 load_dotenv()
 
 class Config:
-    # Gemini API Configuration
-    GEMINI_API_KEY = os.getenv('GEMINI_API_KEY')
+    # Llama API Configuration
+    LLAMA_API_KEY = os.getenv('LLAMA_API_KEY')
     
     # Scraping Configuration
     MAX_PAGES = int(os.getenv('MAX_PAGES', 50))
@@ -21,6 +21,10 @@ class Config:
     MIN_CONTENT_LENGTH = int(os.getenv('MIN_CONTENT_LENGTH', 100))
     MAX_CONTENT_LENGTH = int(os.getenv('MAX_CONTENT_LENGTH', 5000))
     
-    # Gemini Model Configuration
-    GEMINI_MODEL = os.getenv('GEMINI_MODEL', 'gemini-1.5-flash')
+    # Llama Model Configuration
+    LLAMA_MODEL = os.getenv('LLAMA_MODEL', 'llama-3.3-70b-versatile')
+    LLAMA_API_URL = os.getenv('LLAMA_API_URL', 'https://api.groq.com/openai/v1/chat/completions')
     MAX_TOKENS = int(os.getenv('MAX_TOKENS', 1000))
+    
+    # Rate Limiting Configuration (30 requests per minute = 2 seconds between requests)
+    LLAMA_RATE_LIMIT_DELAY = float(os.getenv('LLAMA_RATE_LIMIT_DELAY', 2.0))

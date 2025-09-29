@@ -7,18 +7,18 @@ import json
 import os
 import sys
 from typing import List, Dict
-import google.generativeai as genai
+from groq import Groq
 from config import Config
 
 class ChatbotToSQLConverter:
     def __init__(self):
-        # Set up Gemini for category classification
-        if Config.GEMINI_API_KEY:
-            genai.configure(api_key=Config.GEMINI_API_KEY)
-            self.model = genai.GenerativeModel(Config.GEMINI_MODEL)
+        # Set up Groq for category classification
+        if Config.LLAMA_API_KEY:
+            self.client = Groq(api_key=Config.LLAMA_API_KEY)
+            self.model_name = getattr(Config, 'LLAMA_MODEL', 'llama-3.3-70b-versatile')
         else:
-            self.model = None
-            print("Warning: No Gemini API key found. Categories will be set to 'general'")
+            self.client = None
+            print("Warning: No Groq API key found. Categories will be set to 'general'")
     
     def load_chatbot_data(self, filepath: str) -> Dict:
         """Load chatbot data from JSON file"""
@@ -34,28 +34,37 @@ class ChatbotToSQLConverter:
             return None
     
     def classify_category_with_ai(self, question: str, answer: str) -> str:
-        """Use Gemini AI to classify the category of a Q&A pair"""
-        if not self.model:
+        """Use Groq Llama 3.3 70B to classify the category of a Q&A pair"""
+        if not self.client:
             return 'general'
         
         try:
-            prompt = f"""
-            Analyze this question and answer pair and classify it into one of these categories:
-            - services: Questions about what services/products are offered
-            - pricing: Questions about costs, prices, fees
-            - contact: Questions about how to contact, location, hours
-            - support: Questions about help, troubleshooting, technical issues
-            - policies: Questions about terms, conditions, policies, procedures
-            - general: General information or other topics
+            prompt = f"""Analyze this question and answer pair and classify it into one of these categories:
+- services: Questions about what services/products are offered
+- pricing: Questions about costs, prices, fees
+- contact: Questions about how to contact, location, hours
+- support: Questions about help, troubleshooting, technical issues
+- policies: Questions about terms, conditions, policies, procedures
+- general: General information or other topics
+
+Question: {question}
+Answer: {answer}
+
+Return only the category name (e.g., "services", "pricing", "contact", "support", "policies", "general")"""
             
-            Question: {question}
-            Answer: {answer}
+            response = self.client.chat.completions.create(
+                model=self.model_name,
+                messages=[
+                    {
+                        "role": "user",
+                        "content": prompt
+                    }
+                ],
+                temperature=0.1,
+                max_tokens=10
+            )
             
-            Return only the category name (e.g., "services", "pricing", "contact", "support", "policies", "general")
-            """
-            
-            response = self.model.generate_content(prompt)
-            category = response.text.strip().lower()
+            category = response.choices[0].message.content.strip().lower()
             
             # Validate category
             valid_categories = ['services', 'pricing', 'contact', 'support', 'policies', 'general']

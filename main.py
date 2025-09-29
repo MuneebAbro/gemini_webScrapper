@@ -3,7 +3,7 @@
 Web Scraper Knowledge Base Generator
 
 This script scrapes a website and creates a knowledge base in JSON format
-suitable for automated chatbots using Gemini AI for content processing.
+suitable for automated chatbots using Llama AI for content processing.
 """
 
 import argparse
@@ -14,7 +14,7 @@ from typing import Optional
 from tqdm import tqdm
 
 from web_scraper import WebScraper
-from gemini_processor import GeminiProcessor
+from llama_processor import LlamaProcessor
 from knowledge_base_formatter import KnowledgeBaseFormatter
 from config import Config
 
@@ -46,7 +46,6 @@ def check_dependencies():
     try:
         import requests
         import bs4
-        import google.generativeai
         return True
     except ImportError as e:
         logger.error(f"Missing dependency: {e}")
@@ -61,7 +60,7 @@ def main():
 Examples:
   python main.py https://example.com
   python main.py https://example.com --max-pages 20 --output my_kb.json
-  python main.py https://example.com --no-gemini --delay 2.0
+  python main.py https://example.com --no-llama --delay 2.0
         """
     )
     
@@ -74,8 +73,8 @@ Examples:
                        help=f'Output JSON filename (default: {Config.JSON_FILENAME})')
     parser.add_argument('--output-dir', type=str, default=Config.OUTPUT_DIR,
                        help=f'Output directory (default: {Config.OUTPUT_DIR})')
-    parser.add_argument('--no-gemini', action='store_true',
-                       help='Skip Gemini processing (faster but less structured output)')
+    parser.add_argument('--no-llama', action='store_true',
+                       help='Skip Llama processing (faster but less structured output)')
     parser.add_argument('--min-content', type=int, default=Config.MIN_CONTENT_LENGTH,
                        help=f'Minimum content length to include (default: {Config.MIN_CONTENT_LENGTH})')
     parser.add_argument('--verbose', '-v', action='store_true',
@@ -96,11 +95,11 @@ Examples:
         logger.error(f"Invalid URL: {args.url}")
         sys.exit(1)
     
-    # Check Gemini API key if not using --no-gemini
-    if not args.no_gemini and not Config.GEMINI_API_KEY:
-        logger.error("GEMINI_API_KEY not found in environment variables")
-        logger.error("Please set your Gemini API key or use --no-gemini flag")
-        logger.error("You can set it by creating a .env file with: GEMINI_API_KEY=your_key_here")
+    # Check Llama API key if not using --no-llama
+    if not args.no_llama and not Config.LLAMA_API_KEY:
+        logger.error("LLAMA_API_KEY not found in environment variables")
+        logger.error("Please set your Llama API key or use --no-llama flag")
+        logger.error("You can set it by creating a .env file with: LLAMA_API_KEY=your_key_here")
         sys.exit(1)
     
     try:
@@ -112,7 +111,7 @@ Examples:
         logger.info(f"Delay between requests: {args.delay}s")
         logger.info(f"Output directory: {args.output_dir}")
         logger.info(f"Output file: {args.output}")
-        logger.info(f"Gemini processing: {'Disabled' if args.no_gemini else 'Enabled'}")
+        logger.info(f"Llama processing: {'Disabled' if args.no_llama else 'Enabled'}")
         logger.info("=" * 60)
         
         # Update config with command line arguments
@@ -133,13 +132,13 @@ Examples:
         
         logger.info(f"Successfully scraped {len(scraped_data)} pages")
         
-        # Step 2: Process with Gemini (if enabled)
-        if not args.no_gemini:
-            logger.info("Step 2: Processing content with Gemini AI...")
-            processor = GeminiProcessor()
+        # Step 2: Process with Llama (if enabled)
+        if not args.no_llama:
+            logger.info("Step 2: Processing content with Llama AI...")
+            processor = LlamaProcessor()
             processed_data = processor.batch_process_pages(scraped_data)
         else:
-            logger.info("Step 2: Skipping Gemini processing...")
+            logger.info("Step 2: Skipping Llama processing...")
             # Convert scraped data to basic processed format
             processed_data = []
             for page in scraped_data:
